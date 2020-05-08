@@ -1187,7 +1187,6 @@ class MetadataParser(object):
         retry_dropped_without_headers=None,
         support_malformed=None,
         cached_urlparser=True,
-        use_best_available_html_parser=False
     ):
         """
         creates a new `MetadataParser` instance.
@@ -1282,10 +1281,6 @@ class MetadataParser(object):
                        : INT: use a instance of UrlParserCacheable(maxitems=cached_urlparser)
                        : None/False/0 - use native urlparse
                        : other truthy values - use as a custom urlparse
-            `use_best_available_html_parser`
-                default: False
-                if True, will let BeautifulSoup to use the best available html parser, even at expenses of slower times
-                if False, will default to using BeautifulSoup's built-in `html.parser`
         """
         if url is not None:
             url = url.strip()
@@ -1702,7 +1697,7 @@ class MetadataParser(object):
             urlparser=self.urlparse,
         )
 
-    def parse(self, html, html_encoding=None, support_malformed=None, use_best_available_html_parser=False):
+    def parse(self, html, html_encoding=None, support_malformed=None):
         """
         parses submitted `html`
 
@@ -1732,10 +1727,7 @@ class MetadataParser(object):
                 try:
                     doc = BeautifulSoup(html, "lxml", **kwargs_bs)
                 except:
-                    if use_best_available_html_parser:
-                        doc = BeautifulSoup(html, **kwargs_bs)
-                    else:
-                        doc = BeautifulSoup(html, 'html.parser', **kwargs_bs)
+                    doc = BeautifulSoup(html, "html.parser", **kwargs_bs)
             except:
                 raise NotParsable(
                     "could not parse into BeautifulSoup", metadataParser=self
